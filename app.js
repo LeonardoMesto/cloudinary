@@ -1,26 +1,39 @@
 const express = require('express')
-const multer  = require('multer')
-const upload = multer({ dest: 'uploads/' })
+const upload = require('./multer')
+const cloudinary = require('./cloudinary')
+const fs = require('fs')
+const bodyParser = require('body-parser')
 
 const app = express()
 
-app.post('/profile', upload.single('avatar'), function (req, res, next) {
-  // req.file is the `avatar` file
-  // req.body will hold the text fields, if there were any
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+
+app.get('/', function (req, res) {
+    res.send("<h1>Cloudinary Project</h1>")
 })
 
-app.post('/photos/upload', upload.array('photos', 12), function (req, res, next) {
-  // req.files is array of `photos` files
-  // req.body will contain the text fields, if there were any
+// Make a post request
+app.use('/upload', upload.array('image'), async(req, res) => {
+    const uploader = async (path) => await cloudinary.uploads(path,'Gallery')
+    if(req.method === 'POST') {
+        const urls = []
+        const files = req.files
+        for(const file of files) {
+            const { path } = file
+            const newPath = await uploader(path)
+            urls.push(newPath)
+            fs.unlinkSync(path)
+        }
+        res.status(200).json({  
+            message:"Images Uploaded",
+            data:urls
+        })
+    } else {
+        res.status(404).json({
+            err:"Images Not Uploaded"
+        })
+    }
 })
 
-const cpUpload = upload.fields([{ name: 'avatar', maxCount: 1 }, { name: 'gallery', maxCount: 8 }])
-app.post('/cool-profile', cpUpload, function (req, res, next) {
-  // req.files is an object (String -> Array) where fieldname is the key, and the value is array of files
-  //
-  // e.g.
-  //  req.files['avatar'][0] -> File
-  //  req.files['gallery'] -> Array
-  //
-  // req.body will contain the text fields, if there were any
-})
+app.listen(8080)
