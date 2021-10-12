@@ -1,0 +1,38 @@
+{
+	"info": {
+		"_postman_id": "5493fd4c-15bd-4466-ac5b-548d70550fc9",
+		"name": "Cloudinary",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Upload Image",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": "/C:/Users/cecil/Downloads/Xiao.jpeg"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/upload",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"upload"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
